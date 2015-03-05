@@ -11,8 +11,11 @@ var page;
 
 exports.load = function(args) {
 	page = args.object;
+    pageData.set("grocery", "");
+    pageData.set("groceries", groceries);
 	page.bindingContext = pageData;
 
+    // Empty the array for subsequent visits to the page
 	while (groceries.length) {
 		groceries.pop();
 	}
