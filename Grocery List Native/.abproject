@@ -2,7 +2,7 @@
   "ProjectName": "Grocery List Native",
   "ProjectGuid": "934bfac0-87ed-46ba-8849-974cd5fce28b",
   "projectVersion": 1,
-  "AppIdentifier": "com.telerik.GroceryListNative",
+  "AppIdentifier": "com.tjvantoll.GroceryListNative",
   "DisplayName": "Grocery List Native",
   "Author": "",
   "Description": "Grocery List Native",
