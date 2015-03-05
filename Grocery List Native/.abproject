@@ -5,7 +5,7 @@
   "AppIdentifier": "com.telerik.GroceryListNative",
   "DisplayName": "Grocery List Native",
   "Author": "",
-  "Description": "",
+  "Description": "Grocery List Native",
   "BundleVersion": "1.0",
   "AndroidVersionCode": "1",
   "iOSDeviceFamily": [

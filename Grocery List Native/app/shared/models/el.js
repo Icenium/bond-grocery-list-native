@@ -1,2 +1,3 @@
-var Everlive = require( "../../lib/everlive" );
-module.exports = new Everlive( "GWfRtXi1Lwt4jcqK" );
+var config = require("./config");
+var Everlive = require("../../lib/everlive");
+module.exports = new Everlive(config.apiKey);
