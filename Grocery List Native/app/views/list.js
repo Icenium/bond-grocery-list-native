@@ -1,5 +1,6 @@
-var el = require("../shared/models/el");
 var config = require("../shared/models/config");
+var el = require("../shared/models/el");
+var httpModule = require("http");
 var observableModule = require("data/observable");
 var observableArray = require("data/observable-array");
 var viewModule = require("ui/core/view");
