@@ -9,7 +9,7 @@ function onTextPropertyChanged(data) {
     var bar = data.object;
     bar.ios.text = data.newValue;
 }
-common.textProperty.metadata.onSetNativeValue = onTextPropertyChanged;
+common.SearchBar.textProperty.metadata.onSetNativeValue = onTextPropertyChanged;
 require("utils/module-merge").merge(common, exports);
 var UISearchBarDelegateImpl = (function (_super) {
     __extends(UISearchBarDelegateImpl, _super);
@@ -24,7 +24,7 @@ var UISearchBarDelegateImpl = (function (_super) {
         return this;
     };
     UISearchBarDelegateImpl.prototype.searchBarTextDidChange = function (searchBar, searchText) {
-        this._owner._onPropertyChangedFromNative(common.textProperty, searchText);
+        this._owner._onPropertyChangedFromNative(common.SearchBar.textProperty, searchText);
         if (searchText === "" && this._searchText !== searchText) {
             this._owner._emit(common.knownEvents.clear);
         }
