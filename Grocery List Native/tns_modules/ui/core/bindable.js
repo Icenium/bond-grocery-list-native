@@ -10,7 +10,7 @@ var weakEventListener = require("ui/core/weak-event-listener");
 var types = require("utils/types");
 var trace = require("trace");
 var polymerExpressions = require("js-libs/polymer-expressions");
-exports.bindingContextProperty = new dependencyObservable.Property("bindingContext", "Bindable", new dependencyObservable.PropertyMetadata(undefined, dependencyObservable.PropertyMetadataSettings.Inheritable));
+var bindingContextProperty = new dependencyObservable.Property("bindingContext", "Bindable", new dependencyObservable.PropertyMetadata(undefined, dependencyObservable.PropertyMetadataSettings.Inheritable));
 var Bindable = (function (_super) {
     __extends(Bindable, _super);
     function Bindable() {
@@ -19,10 +19,10 @@ var Bindable = (function (_super) {
     }
     Object.defineProperty(Bindable.prototype, "bindingContext", {
         get: function () {
-            return this._getValue(exports.bindingContextProperty);
+            return this._getValue(Bindable.bindingContextProperty);
         },
         set: function (value) {
-            this._setValue(exports.bindingContextProperty, value);
+            this._setValue(Bindable.bindingContextProperty, value);
         },
         enumerable: true,
         configurable: true
@@ -62,7 +62,7 @@ var Bindable = (function (_super) {
     Bindable.prototype._onPropertyChanged = function (property, oldValue, newValue) {
         trace.write("Bindable._onPropertyChanged(" + this + ") " + property.name, trace.categories.Binding);
         _super.prototype._onPropertyChanged.call(this, property, oldValue, newValue);
-        if (property === exports.bindingContextProperty) {
+        if (property === Bindable.bindingContextProperty) {
             this._onBindingContextChanged(oldValue, newValue);
         }
         var binding = this._bindings[property.name];
@@ -82,7 +82,7 @@ var Bindable = (function (_super) {
         var binding;
         for (var p in this._bindings) {
             binding = this._bindings[p];
-            if (binding.options.targetProperty === exports.bindingContextProperty.name && binding.updating) {
+            if (binding.options.targetProperty === Bindable.bindingContextProperty.name && binding.updating) {
                 continue;
             }
             if (binding.source && binding.source.get() !== oldValue) {
@@ -95,6 +95,7 @@ var Bindable = (function (_super) {
             }
         }
     };
+    Bindable.bindingContextProperty = bindingContextProperty;
     return Bindable;
 })(dependencyObservable.DependencyObservable);
 exports.Bindable = Bindable;

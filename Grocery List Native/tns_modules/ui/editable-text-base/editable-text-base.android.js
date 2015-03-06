@@ -39,7 +39,7 @@ var EditableTextBase = (function (_super) {
                         owner._dirtyTextAccumulator = editable.toString();
                         break;
                     case enums.UpdateTextTrigger.textChanged:
-                        owner._onPropertyChangedFromNative(textBase.textProperty, editable.toString());
+                        owner._onPropertyChangedFromNative(textBase.TextBase.textProperty, editable.toString());
                         break;
                     default:
                         throw new Error("Invalid updateTextTrigger: " + owner.updateTextTrigger);
@@ -56,7 +56,7 @@ var EditableTextBase = (function (_super) {
                 }
                 if (!hasFocus) {
                     if (owner._dirtyTextAccumulator) {
-                        owner._onPropertyChangedFromNative(textBase.textProperty, owner._dirtyTextAccumulator);
+                        owner._onPropertyChangedFromNative(textBase.TextBase.textProperty, owner._dirtyTextAccumulator);
                         owner._dirtyTextAccumulator = undefined;
                     }
                     owner.dismissSoftInput();

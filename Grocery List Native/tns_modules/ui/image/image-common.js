@@ -27,26 +27,22 @@ function onUrlPropertyChanged(data) {
         image.source = null;
         image["_url"] = value;
         if (value !== "") {
-            image._setValue(exports.isLoadingProperty, true);
+            image._setValue(Image.isLoadingProperty, true);
             if (value.trim().indexOf("~/") === 0) {
                 image.source = imageSource.fromFile(value.trim());
-                image._setValue(exports.isLoadingProperty, false);
+                image._setValue(Image.isLoadingProperty, false);
             }
             else {
                 imageSource.fromUrl(value).then(function (r) {
                     if (image["_url"] === value) {
                         image.source = r;
-                        image._setValue(exports.isLoadingProperty, false);
+                        image._setValue(Image.isLoadingProperty, false);
                     }
                 });
             }
         }
     }
 }
-exports.urlProperty = new dependencyObservable.Property(URL, IMAGE, new proxy.PropertyMetadata("", dependencyObservable.PropertyMetadataSettings.None, onUrlPropertyChanged));
-exports.sourceProperty = new dependencyObservable.Property(SOURCE, IMAGE, new proxy.PropertyMetadata(undefined, dependencyObservable.PropertyMetadataSettings.None));
-exports.isLoadingProperty = new dependencyObservable.Property(ISLOADING, IMAGE, new proxy.PropertyMetadata(false, dependencyObservable.PropertyMetadataSettings.None));
-exports.stretchProperty = new dependencyObservable.Property(STRETCH, IMAGE, new proxy.PropertyMetadata(enums.Stretch.aspectFit, dependencyObservable.PropertyMetadataSettings.AffectsLayout));
 var Image = (function (_super) {
     __extends(Image, _super);
     function Image(options) {
@@ -54,37 +50,37 @@ var Image = (function (_super) {
     }
     Object.defineProperty(Image.prototype, "source", {
         get: function () {
-            return this._getValue(exports.sourceProperty);
+            return this._getValue(Image.sourceProperty);
         },
         set: function (value) {
-            this._setValue(exports.sourceProperty, value);
+            this._setValue(Image.sourceProperty, value);
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Image.prototype, "url", {
         get: function () {
-            return this._getValue(exports.urlProperty);
+            return this._getValue(Image.urlProperty);
         },
         set: function (value) {
-            this._setValue(exports.urlProperty, value);
+            this._setValue(Image.urlProperty, value);
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Image.prototype, "isLoading", {
         get: function () {
-            return this._getValue(exports.isLoadingProperty);
+            return this._getValue(Image.isLoadingProperty);
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Image.prototype, "stretch", {
         get: function () {
-            return this._getValue(exports.stretchProperty);
+            return this._getValue(Image.stretchProperty);
         },
         set: function (value) {
-            this._setValue(exports.stretchProperty, value);
+            this._setValue(Image.stretchProperty, value);
         },
         enumerable: true,
         configurable: true
@@ -140,6 +136,10 @@ var Image = (function (_super) {
         }
         return { width: scaleW, height: scaleH };
     };
+    Image.urlProperty = new dependencyObservable.Property(URL, IMAGE, new proxy.PropertyMetadata("", dependencyObservable.PropertyMetadataSettings.None, onUrlPropertyChanged));
+    Image.sourceProperty = new dependencyObservable.Property(SOURCE, IMAGE, new proxy.PropertyMetadata(undefined, dependencyObservable.PropertyMetadataSettings.None));
+    Image.isLoadingProperty = new dependencyObservable.Property(ISLOADING, IMAGE, new proxy.PropertyMetadata(false, dependencyObservable.PropertyMetadataSettings.None));
+    Image.stretchProperty = new dependencyObservable.Property(STRETCH, IMAGE, new proxy.PropertyMetadata(enums.Stretch.aspectFit, dependencyObservable.PropertyMetadataSettings.AffectsLayout));
     return Image;
 })(view.View);
 exports.Image = Image;

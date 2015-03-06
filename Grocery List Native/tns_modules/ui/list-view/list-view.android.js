@@ -33,11 +33,11 @@ var ListView = (function (_super) {
                     return;
                 }
                 if (scrollState === android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    owner._setValue(common.isScrollingProperty, false);
+                    owner._setValue(common.ListView.isScrollingProperty, false);
                     owner._notifyScrollIdle();
                 }
                 else {
-                    owner._setValue(common.isScrollingProperty, true);
+                    owner._setValue(common.ListView.isScrollingProperty, true);
                 }
             },
             onScroll: function (view, firstVisibleItem, visibleItemCount, totalItemCount) {

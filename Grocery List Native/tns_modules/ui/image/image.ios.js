@@ -32,8 +32,8 @@ function onSourcePropertyChanged(data) {
         image.requestLayout();
     }
 }
-imageCommon.stretchProperty.metadata.onSetNativeValue = onStretchPropertyChanged;
-imageCommon.sourceProperty.metadata.onSetNativeValue = onSourcePropertyChanged;
+imageCommon.Image.stretchProperty.metadata.onSetNativeValue = onStretchPropertyChanged;
+imageCommon.Image.sourceProperty.metadata.onSetNativeValue = onSourcePropertyChanged;
 var Image = (function (_super) {
     __extends(Image, _super);
     function Image(options) {
