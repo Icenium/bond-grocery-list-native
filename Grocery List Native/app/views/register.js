@@ -37,7 +37,7 @@ exports.register = function() {
 			dialogs
 				.alert("Your account was successfully created.")
 				.then(function() {
-					frameModule.topmost().navigate("app/views/login");
+					frameModule.topmost().navigate("./views/login");
 				});
 		},
 		function(error) {

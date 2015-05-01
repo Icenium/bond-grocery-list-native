@@ -26,7 +26,7 @@ exports.signIn = function(args) {
 		pageData.get("username"),
 		pageData.get("password"),
 		function() {
-			frameModule.topmost().navigate("app/views/list");
+			frameModule.topmost().navigate("./views/list");
 		},
 		function() {
 			dialogs.alert({
@@ -39,5 +39,5 @@ exports.signIn = function(args) {
 
 exports.register = function(args) {
     var topmost = frameModule.topmost();
-    topmost.navigate("app/views/register");
+    topmost.navigate("./views/register");
 };
