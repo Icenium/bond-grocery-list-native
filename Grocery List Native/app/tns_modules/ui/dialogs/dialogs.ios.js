@@ -1,3 +1,6 @@
+/**
+ * iOS specific dialogs functions implementation.
+ */
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -53,30 +56,56 @@ function createUIAlertView(options) {
     ;
     return alert;
 }
+var allertButtons;
+(function (allertButtons) {
+    allertButtons[allertButtons["cancel"] = 1] = "cancel";
+    allertButtons[allertButtons["neutral"] = 2] = "neutral";
+    allertButtons[allertButtons["ok"] = 4] = "ok";
+})(allertButtons || (allertButtons = {}));
 function addButtonsToAlertDialog(alert, options) {
     if (!options) {
         return;
     }
-    if (options.okButtonText) {
-        alert.addButtonWithTitle(options.okButtonText);
-    }
     if (options.cancelButtonText) {
+        alert.tag = allertButtons.cancel;
         alert.addButtonWithTitle(options.cancelButtonText);
     }
     if (options.neutralButtonText) {
+        alert.tag = alert.tag | allertButtons.neutral;
         alert.addButtonWithTitle(options.neutralButtonText);
     }
+    if (options.okButtonText) {
+        alert.tag = alert.tag | allertButtons.ok;
+        alert.addButtonWithTitle(options.okButtonText);
+    }
+}
+function getDialogResult(buttons, index) {
+    var hasCancel = buttons & allertButtons.cancel;
+    var hasNeutral = buttons & allertButtons.neutral;
+    var hasOk = buttons & allertButtons.ok;
+    if (hasCancel && hasNeutral && hasOk) {
+        return index === 0 ? false : index === 2 ? true : undefined;
+    }
+    else if (buttons & hasNeutral && hasOk) {
+        return index === 0 ? undefined : true;
+    }
+    else if (hasCancel && hasOk) {
+        return index !== 0;
+    }
+    else if (hasCancel && hasNeutral) {
+        return index === 0 ? false : undefined;
+    }
+    else if (hasCancel) {
+        return false;
+    }
+    else if (hasOk) {
+        return true;
+    }
+    return undefined;
 }
 function addButtonsToAlertController(alertController, options, okCallback, cancelCallback, neutralCallback) {
     if (!options) {
         return;
-    }
-    if (types.isString(options.okButtonText)) {
-        alertController.addAction(UIAlertAction.actionWithTitleStyleHandler(options.okButtonText, UIAlertActionStyle.UIAlertActionStyleDefault, function (arg) {
-            if (types.isFunction(okCallback)) {
-                okCallback();
-            }
-        }));
     }
     if (types.isString(options.cancelButtonText)) {
         alertController.addAction(UIAlertAction.actionWithTitleStyleHandler(options.cancelButtonText, UIAlertActionStyle.UIAlertActionStyleDefault, function (arg) {
@@ -89,6 +118,13 @@ function addButtonsToAlertController(alertController, options, okCallback, cance
         alertController.addAction(UIAlertAction.actionWithTitleStyleHandler(options.neutralButtonText, UIAlertActionStyle.UIAlertActionStyleDefault, function (arg) {
             if (types.isFunction(cancelCallback)) {
                 neutralCallback();
+            }
+        }));
+    }
+    if (types.isString(options.okButtonText)) {
+        alertController.addAction(UIAlertAction.actionWithTitleStyleHandler(options.okButtonText, UIAlertActionStyle.UIAlertActionStyleDefault, function (arg) {
+            if (types.isFunction(okCallback)) {
+                okCallback();
             }
         }));
     }
@@ -111,9 +147,7 @@ function alert(arg) {
             }
             else {
                 var alertController = UIAlertController.alertControllerWithTitleMessagePreferredStyle(options.title, options.message, UIAlertControllerStyle.UIAlertControllerStyleAlert);
-                addButtonsToAlertController(alertController, options, function () {
-                    resolve();
-                });
+                addButtonsToAlertController(alertController, options, function () { resolve(); });
                 showUIAlertController(alertController);
             }
         }
@@ -131,7 +165,7 @@ function confirm(arg) {
                 var alert = createUIAlertView(options);
                 addButtonsToAlertDialog(alert, options);
                 var delegate = UIAlertViewDelegateImpl.new().initWithCallback(function (view, index) {
-                    resolve(index === 2 ? undefined : index === 0);
+                    resolve(getDialogResult(alert.tag, index));
                     delegate = undefined;
                 });
                 alert.delegate = delegate;
@@ -139,13 +173,7 @@ function confirm(arg) {
             }
             else {
                 var alertController = UIAlertController.alertControllerWithTitleMessagePreferredStyle(options.title, options.message, UIAlertControllerStyle.UIAlertControllerStyleAlert);
-                addButtonsToAlertController(alertController, options, function () {
-                    resolve(true);
-                }, function () {
-                    resolve(false);
-                }, function () {
-                    resolve(undefined);
-                });
+                addButtonsToAlertController(alertController, options, function () { resolve(true); }, function () { resolve(false); }, function () { resolve(undefined); });
                 showUIAlertController(alertController);
             }
         }
@@ -194,7 +222,7 @@ function prompt(arg) {
                 textField = alert.textFieldAtIndex(0);
                 textField.text = types.isString(options.defaultText) ? options.defaultText : "";
                 var delegate = UIAlertViewDelegateImpl.new().initWithCallback(function (view, index) {
-                    resolve({ result: index === 2 ? undefined : index === 0, text: textField.text });
+                    resolve({ result: getDialogResult(alert.tag, index), text: textField.text });
                     delegate = undefined;
                 });
                 alert.delegate = delegate;
@@ -207,13 +235,7 @@ function prompt(arg) {
                     arg.secureTextEntry = options && options.inputType === dialogs.inputType.password;
                 });
                 textField = alertController.textFields.firstObject;
-                addButtonsToAlertController(alertController, options, function () {
-                    resolve({ result: true, text: textField.text });
-                }, function () {
-                    resolve({ result: false, text: textField.text });
-                }, function () {
-                    resolve({ result: undefined, text: textField.text });
-                });
+                addButtonsToAlertController(alertController, options, function () { resolve({ result: true, text: textField.text }); }, function () { resolve({ result: false, text: textField.text }); }, function () { resolve({ result: undefined, text: textField.text }); });
                 showUIAlertController(alertController);
             }
         }
@@ -260,10 +282,10 @@ function login(arg) {
                 addButtonsToAlertDialog(alert, options);
                 userNameTextField = alert.textFieldAtIndex(0);
                 userNameTextField.text = types.isString(options.userName) ? options.userName : "";
-                userNameTextField = alert.textFieldAtIndex(1);
-                userNameTextField.text = types.isString(options.password) ? options.password : "";
+                passwordTextField = alert.textFieldAtIndex(1);
+                passwordTextField.text = types.isString(options.password) ? options.password : "";
                 var delegate = UIAlertViewDelegateImpl.new().initWithCallback(function (view, index) {
-                    resolve({ result: index === 2 ? undefined : index === 0, userName: userNameTextField.text, password: userNameTextField.text });
+                    resolve({ result: getDialogResult(alert.tag, index), userName: userNameTextField.text, password: passwordTextField.text });
                     delegate = undefined;
                 });
                 alert.delegate = delegate;
@@ -282,13 +304,7 @@ function login(arg) {
                 });
                 userNameTextField = alertController.textFields.firstObject;
                 passwordTextField = alertController.textFields.lastObject;
-                addButtonsToAlertController(alertController, options, function () {
-                    resolve({ result: true, userName: userNameTextField.text, password: passwordTextField.text });
-                }, function () {
-                    resolve({ result: false, userName: userNameTextField.text, password: passwordTextField.text });
-                }, function () {
-                    resolve({ result: undefined, userName: userNameTextField.text, password: passwordTextField.text });
-                });
+                addButtonsToAlertController(alertController, options, function () { resolve({ result: true, userName: userNameTextField.text, password: passwordTextField.text }); }, function () { resolve({ result: false, userName: userNameTextField.text, password: passwordTextField.text }); }, function () { resolve({ result: undefined, userName: userNameTextField.text, password: passwordTextField.text }); });
                 showUIAlertController(alertController);
             }
         }
@@ -303,6 +319,11 @@ function showUIAlertController(alertController) {
     if (topMostFrame) {
         var viewController = topMostFrame.currentPage && topMostFrame.currentPage.ios;
         if (viewController) {
+            if (alertController.popoverPresentationController) {
+                alertController.popoverPresentationController.sourceView = viewController.view;
+                alertController.popoverPresentationController.sourceRect = CGRectMake(viewController.view.bounds.size.width / 2.0, viewController.view.bounds.size.height / 2.0, 1.0, 1.0);
+                alertController.popoverPresentationController.permittedArrowDirections = 0;
+            }
             viewController.presentModalViewControllerAnimated(alertController, true);
         }
     }

@@ -7,11 +7,6 @@ var __extends = this.__extends || function (d, b) {
 var common = require("ui/text-field/text-field-common");
 var textBase = require("ui/text-base");
 var enums = require("ui/enums");
-function onHintPropertyChanged(data) {
-    var textField = data.object;
-    textField.ios.placeholder = data.newValue;
-}
-common.hintProperty.metadata.onSetNativeValue = onHintPropertyChanged;
 function onSecurePropertyChanged(data) {
     var textField = data.object;
     textField.ios.secureTextEntry = data.newValue;
@@ -31,6 +26,7 @@ var UITextFieldDelegateImpl = (function (_super) {
         return this;
     };
     UITextFieldDelegateImpl.prototype.textFieldShouldBeginEditing = function (textField) {
+        this.firstEdit = true;
         return this._owner.editable;
     };
     UITextFieldDelegateImpl.prototype.textFieldDidEndEditing = function (textField) {
@@ -39,15 +35,26 @@ var UITextFieldDelegateImpl = (function (_super) {
         }
         this._owner.dismissSoftInput();
     };
+    UITextFieldDelegateImpl.prototype.textFieldShouldClear = function (textField) {
+        this.firstEdit = false;
+        this._owner._onPropertyChangedFromNative(textBase.TextBase.textProperty, "");
+        return true;
+    };
     UITextFieldDelegateImpl.prototype.textFieldShouldReturn = function (textField) {
         this._owner.dismissSoftInput();
         return true;
     };
     UITextFieldDelegateImpl.prototype.textFieldShouldChangeCharactersInRangeReplacementString = function (textField, range, replacementString) {
         if (this._owner.updateTextTrigger === enums.UpdateTextTrigger.textChanged) {
-            var newText = NSString.alloc().initWithString(textField.text).stringByReplacingCharactersInRangeWithString(range, replacementString);
-            this._owner._onPropertyChangedFromNative(textBase.TextBase.textProperty, newText);
+            if (textField.secureTextEntry && this.firstEdit) {
+                this._owner._onPropertyChangedFromNative(textBase.TextBase.textProperty, replacementString);
+            }
+            else {
+                var newText = NSString.alloc().initWithString(textField.text).stringByReplacingCharactersInRangeWithString(range, replacementString);
+                this._owner._onPropertyChangedFromNative(textBase.TextBase.textProperty, newText);
+            }
         }
+        this.firstEdit = false;
         return true;
     };
     UITextFieldDelegateImpl.ObjCProtocols = [UITextFieldDelegate];
@@ -75,6 +82,10 @@ var TextField = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    TextField.prototype._onHintPropertyChanged = function (data) {
+        var textField = data.object;
+        textField.ios.placeholder = data.newValue;
+    };
     return TextField;
 })(common.TextField);
 exports.TextField = TextField;
